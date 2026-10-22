@@ -1,0 +1,2930 @@
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { 
+  Bike, ShoppingBag, ShoppingCart, Search, Filter, Star, ShieldCheck, 
+  Truck, Award, Wrench, ChevronRight, X, Plus, Minus, CheckCircle, 
+  AlertCircle, Phone, Mail, MapPin, Printer, Download, Clock, User, 
+  Lock, MessageSquare, Send, Tag, ArrowRight, RefreshCw, Eye, Trash2, 
+  Upload, Check, Heart, HelpCircle, ChevronDown, SlidersHorizontal, 
+  DollarSign, BarChart2, PackageCheck, AlertTriangle
+} from 'lucide-react';
+
+const APP_STORE_NAME = "BHARAT CYCLE STORE";
+const STORE_TAGLINE = "Ride Your Dreams. Explore Every Road.";
+const STORE_ADDRESS = "108-112, Grand Trunk Road, Near City Sports Complex, New Delhi, India - 110001";
+const STORE_PHONE = "+91 98765 43210";
+const STORE_EMAIL = "sales@bharatcyclestore.in";
+
+// 30 Comprehensive bicycle & accessory categories
+const CATEGORIES_LIST = [
+  "All Categories",
+  "Mountain Bikes (MTB)",
+  "Road Bikes",
+  "Hybrid Bicycles",
+  "City & Commuter Cycles",
+  "Kids' Bicycles",
+  "Electric Bicycles (E-Bikes)",
+  "BMX & Freestyle Bikes",
+  "Gear & Multi-Speed Cycles",
+  "Bicycle Helmets",
+  "Bicycle Locks & Security",
+  "Lights & Reflectors",
+  "Bicycle Pumps",
+  "Water Bottles & Holders",
+  "Bicycle Tyres & Tubes",
+  "Brakes & Brake Pads",
+  "Mudguards & Carriers",
+  "Gloves & Cycling Apparel",
+  "Repair Kits & Tools",
+  "Spare Parts & Pedals",
+  "Special Clearance"
+];
+
+const INITIAL_PRODUCTS = [
+  {
+    id: "BCS-MTB-01",
+    name: "Thunderbolt Apex 29T MTB",
+    category: "Mountain Bikes (MTB)",
+    brand: "BharatPro",
+    price: 18499,
+    originalPrice: 24999,
+    rating: 4.8,
+    reviewsCount: 42,
+    stock: 8,
+    sku: "MTB-29-APX",
+    badge: "Bestseller",
+    image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80",
+    specs: {
+      wheelSize: "29 Inches",
+      gearCount: "21 Speed Shimano Tourney",
+      frameMaterial: "Lightweight 6061 Alloy",
+      brakes: "Dual Mechanical Disc Brakes",
+      riderHeight: "5ft 6in - 6ft 2in",
+      suspension: "100mm Lockout Front Fork"
+    },
+    description: "Built for tough trails and rugged terrain. Features alloy frame geometry, puncture-resistant tyres, and smooth Shimano 21-speed gears."
+  },
+  {
+    id: "BCS-ROAD-02",
+    name: "Veloce Aero Carbon Road Bike",
+    category: "Road Bikes",
+    brand: "AeroSprint",
+    price: 45999,
+    originalPrice: 58000,
+    rating: 4.9,
+    reviewsCount: 29,
+    stock: 4,
+    sku: "RD-AERO-700C",
+    badge: "Pro Edition",
+    image: "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=800&q=80",
+    specs: {
+      wheelSize: "700 x 25C",
+      gearCount: "18 Speed Shimano Sora",
+      frameMaterial: "Toray T700 Monocoque Carbon",
+      brakes: "Hydraulic Disc Brakes",
+      riderHeight: "5ft 5in - 6ft 0in",
+      suspension: "Rigid Aero Carbon Fork"
+    },
+    description: "Designed for aerodynamic efficiency and speed on flat tarmac. Streamlined cockpit with internally routed cables."
+  },
+  {
+    id: "BCS-EBK-03",
+    name: "VoltRider Pulse E-Bike 36V",
+    category: "Electric Bicycles (E-Bikes)",
+    brand: "VoltRider",
+    price: 32999,
+    originalPrice: 42999,
+    rating: 4.7,
+    reviewsCount: 35,
+    stock: 6,
+    sku: "EBK-36V-PLS",
+    badge: "Eco Electric",
+    image: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=800&q=80",
+    specs: {
+      wheelSize: "27.5 Inches",
+      gearCount: "7 Speed Shimano + 5 PAS Modes",
+      frameMaterial: "Reinforced Aircraft Alloy",
+      brakes: "E-Cut Off Front & Rear Discs",
+      riderHeight: "5ft 4in - 6ft 1in",
+      batteryRange: "55 KM per charge (Detachable LG cells)"
+    },
+    description: "Conquer city commutes and uphill gradients effortlessly. Features instant pedal-assist acceleration, LED dashboard, and fast USB port."
+  },
+  {
+    id: "BCS-KID-04",
+    name: "Junior Ranger 20T Kids Bike",
+    category: "Kids' Bicycles",
+    brand: "TinyRider",
+    price: 6499,
+    originalPrice: 8999,
+    rating: 4.6,
+    reviewsCount: 19,
+    stock: 12,
+    sku: "KID-20-RNG",
+    badge: "Safe for Kids",
+    image: "https://images.unsplash.com/photo-1502744688674-c619d1586c9e?auto=format&fit=crop&w=800&q=80",
+    specs: {
+      wheelSize: "20 Inches",
+      gearCount: "Single Speed with Chain Guard",
+      frameMaterial: "High-Tensile Steel",
+      brakes: "Smooth Caliper & Coaster Brake",
+      riderHeight: "7 to 10 Years (3ft 10in - 4ft 6in)",
+      extras: "Heavy Duty Training Wheels included"
+    },
+    description: "Safe, colorful, and fun. Includes full chain cover, supportive training stabilizers, and anti-slip ribbed grips."
+  },
+  {
+    id: "BCS-HYB-05",
+    name: "UrbanGlide 700c Hybrid Cruiser",
+    category: "Hybrid Bicycles",
+    brand: "BharatPro",
+    price: 15499,
+    originalPrice: 20000,
+    rating: 4.7,
+    reviewsCount: 23,
+    stock: 9,
+    sku: "HYB-700-GLD",
+    badge: "Popular City Bike",
+    image: "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=800&q=80",
+    specs: {
+      wheelSize: "700 x 35C All-Terrain",
+      gearCount: "21 Speed Microshift",
+      frameMaterial: "Hydroformed 6061 Aluminium",
+      brakes: "Dual V-Brakes with Alloy Levers",
+      riderHeight: "5ft 3in - 5ft 11in",
+      comfort: "Memory Foam Ergonomic Saddle"
+    },
+    description: "The ideal blend of road bike speed and MTB comfort for fitness enthusiasts and everyday office commuting."
+  },
+  {
+    id: "BCS-ACC-06",
+    name: "AeroShield Aerodynamic Helmet",
+    category: "Bicycle Helmets",
+    brand: "SafeRide",
+    price: 1799,
+    originalPrice: 2799,
+    rating: 4.9,
+    reviewsCount: 88,
+    stock: 25,
+    sku: "ACC-HLM-06",
+    badge: "Safety Certified",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80",
+    specs: {
+      wheelSize: "Adjustable 54-61cm (M/L)",
+      gearCount: "In-Mold Polycarbonate + High-Density EPS",
+      frameMaterial: "22 Aerodynamic Cooling Vents",
+      brakes: "Rear Rechargeable LED Safety Flasher",
+      riderHeight: "All Adult Riders",
+      weight: "Lightweight 240g"
+    },
+    description: "CE & CPSC certified road & MTB cycling helmet. Ultra-light, breathable honeycomb airflow channel with integrated rear taillight."
+  },
+  {
+    id: "BCS-ACC-07",
+    name: "UltraBeam 1200 Lumens USB Headlight Set",
+    category: "Lights & Reflectors",
+    brand: "NightGlow",
+    price: 1199,
+    originalPrice: 1999,
+    rating: 4.8,
+    reviewsCount: 64,
+    stock: 30,
+    sku: "ACC-LGT-07",
+    badge: "Waterproof IPX6",
+    image: "https://images.unsplash.com/photo-1511994298241-608e28f14fde?auto=format&fit=crop&w=800&q=80",
+    specs: {
+      wheelSize: "Tool-free Quick Mount Handlebar clamp",
+      gearCount: "5 Modes (High, Mid, Low, Strobe, SOS)",
+      frameMaterial: "Anodized Aerospace Aluminum",
+      brakes: "USB-C Rechargeable 4000mAh Battery",
+      riderHeight: "Beam Throw up to 200m",
+      extras: "Free Red High-Intensity Taillight included"
+    },
+    description: "Night riding beast with wide ambient spread. Powers continuously up to 8 hours and doubles as emergency powerbank."
+  },
+  {
+    id: "BCS-ACC-08",
+    name: "Titanium Steel Heavy Duty Chain Lock",
+    category: "Bicycle Locks & Security",
+    brand: "SafeRide",
+    price: 899,
+    originalPrice: 1499,
+    rating: 4.5,
+    reviewsCount: 40,
+    stock: 18,
+    sku: "ACC-LCK-08",
+    badge: "Anti-Theft",
+    image: "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=800&q=80",
+    specs: {
+      wheelSize: "Length: 100cm, Thickness: 8mm Steel",
+      gearCount: "Resistant to 10-Ton Hydraulic Cutters",
+      frameMaterial: "Wear-resistant Nylon Protective Sleeve",
+      brakes: "Brass Cylinder with 3 Laser Cut Keys",
+      riderHeight: "Fits all bicycles and motorbikes"
+    },
+    description: "Hardened manganese steel chain lock engineered to deter thieves and withstand bolt cutter attacks."
+  }
+];
+
+const INITIAL_COUPONS = [
+  { code: "FIRST10", discountPercent: 10, minOrder: 0, desc: "10% Flat off your first order!" },
+  { code: "RIDE999", discountPercent: 15, minOrder: 999, desc: "15% off orders over ₹999!" },
+  { code: "BHARATFEST", discountAmount: 1500, minOrder: 15000, desc: "₹1,500 off on premium bicycles!" }
+];
+
+export default function App() {
+  // Navigation & View State
+  const [currentView, setCurrentView] = useState("home"); // home, shop, product-detail, cart, checkout, my-orders, contact, about, admin
+  const [selectedProductId, setSelectedProductId] = useState(null);
+
+  // Products & Inventory State
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [sortBy, setSortBy] = useState("featured"); // featured, price-low, price-high, rating
+  const [maxPriceFilter, setMaxPriceFilter] = useState(60000);
+
+  // Cart & Order State
+  const [cartItems, setCartItems] = useState([
+    { product: INITIAL_PRODUCTS[0], quantity: 1 } // sample prefilled item for instant usability
+  ]);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponMessage, setCouponMessage] = useState(null);
+
+  // Checkout Form State
+  const [checkoutData, setCheckoutData] = useState({
+    fullName: "Rohan Verma",
+    mobile: "9876543210",
+    email: "rohan.verma@example.com",
+    address: "B-42, Shivalik Enclave, Sector 14",
+    city: "New Delhi",
+    state: "Delhi",
+    pincode: "110025",
+    paymentMethod: "cod", // cod, razorpay
+    notes: "Please deliver between 10am to 4pm"
+  });
+
+  // Orders and Invoice Storage
+  const [orders, setOrders] = useState([
+    {
+      id: "ORD-2026-9041",
+      invoiceNumber: "INV-BCS-9041",
+      date: "2026-10-21 14:30",
+      customer: {
+        fullName: "Aarav Sharma",
+        mobile: "9811223344",
+        email: "aarav.sharma@example.com",
+        address: "Plot 12, Mayur Vihar Phase 1",
+        city: "Delhi",
+        state: "Delhi",
+        pincode: "110091"
+      },
+      items: [
+        { ...INITIAL_PRODUCTS[1], quantity: 1, unitPrice: 45999 }
+      ],
+      subtotal: 45999,
+      discount: 4599.9,
+      tax: 4967.89, // 12% GST
+      shipping: 0,
+      total: 46366.99,
+      paymentMethod: "Razorpay / UPI",
+      paymentStatus: "Paid Online",
+      orderStatus: "Processing",
+      timeline: [
+        { time: "2026-10-21 14:30", status: "Order Placed & Verified" },
+        { time: "2026-10-21 16:00", status: "Packed & Prepped for Dispatch" }
+      ]
+    }
+  ]);
+
+  // Current active invoice to view/print
+  const [activeInvoiceOrder, setActiveInvoiceOrder] = useState(null);
+
+  // Customer Reviews
+  const [reviews, setReviews] = useState([
+    {
+      id: "REV-1",
+      productId: "BCS-MTB-01",
+      userName: "Vikramaditya Rathore",
+      rating: 5,
+      date: "2026-10-18",
+      title: "Phenomenal build quality for Indian trails!",
+      comment: "The Shimano gears shift like butter and the disc brakes give insane stopping power even on dusty roads. Delivered within 3 days in solid wooden crate packaging!",
+      status: "approved"
+    },
+    {
+      id: "REV-2",
+      productId: "BCS-EBK-03",
+      userName: "Priya Sundaram",
+      rating: 5,
+      date: "2026-10-15",
+      title: "Game changer for office commute!",
+      comment: "Charges fast, battery lasts nearly 50km easily. Save so much petrol money every month.",
+      status: "approved"
+    }
+  ]);
+  const [newReviewForm, setNewReviewForm] = useState({
+    name: "",
+    rating: 5,
+    title: "",
+    comment: ""
+  });
+  const [reviewSuccessMsg, setReviewSuccessMsg] = useState("");
+
+  // Customer Live Chat State
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    {
+      sender: "store",
+      text: "Namaste! Welcome to BHARAT CYCLE STORE 🚲. How can our cycling experts assist you today with bike sizing, gears, or accessories?",
+      time: "Just now"
+    }
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [isStoreTyping, setIsStoreTyping] = useState(false);
+
+  // Admin Dashboard State
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminPin, setAdminPin] = useState("");
+  const [adminPinError, setAdminPinError] = useState("");
+  const [adminTab, setAdminTab] = useState("overview"); // overview, orders, inventory, add-product, reviews, chat, coupons
+
+  // New Product Modal / Add State
+  const [newProductForm, setNewProductForm] = useState({
+    name: "",
+    category: "Mountain Bikes (MTB)",
+    brand: "BharatPro",
+    price: "",
+    originalPrice: "",
+    stock: 10,
+    sku: "",
+    wheelSize: "27.5 Inch",
+    gearCount: "21 Speed",
+    frameMaterial: "Alloy 6061",
+    description: "",
+    image: ""
+  });
+
+  const cartSubtotal = useMemo(() => {
+    return cartItems.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+  }, [cartItems]);
+
+  const discountAmount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.discountPercent) {
+      return (cartSubtotal * appliedCoupon.discountPercent) / 100;
+    }
+    if (appliedCoupon.discountAmount) {
+      return Math.min(cartSubtotal, appliedCoupon.discountAmount);
+    }
+    return 0;
+  }, [cartSubtotal, appliedCoupon]);
+
+  const calculatedTax = useMemo(() => {
+    // 12% GST on cycles and sporting gear in India
+    const taxableAmount = Math.max(0, cartSubtotal - discountAmount);
+    return taxableAmount * 0.12;
+  }, [cartSubtotal, discountAmount]);
+
+  const shippingCharges = useMemo(() => {
+    if (cartSubtotal === 0) return 0;
+    return cartSubtotal >= 1999 ? 0 : 250; // Free shipping over ₹1,999
+  }, [cartSubtotal]);
+
+  const finalGrandTotal = useMemo(() => {
+    if (cartSubtotal === 0) return 0;
+    return Math.max(0, cartSubtotal - discountAmount + calculatedTax + shippingCharges);
+  }, [cartSubtotal, discountAmount, calculatedTax, shippingCharges]);
+
+  const handleAddToCart = (product, qty = 1) => {
+    setCartItems(prev => {
+      const existing = prev.find(item => item.product.id === product.id);
+      if (existing) {
+        return prev.map(item => 
+          item.product.id === product.id 
+            ? { ...item, quantity: item.quantity + qty } 
+            : item
+        );
+      }
+      return [...prev, { product, quantity: qty }];
+    });
+  };
+
+  const handleUpdateQuantity = (productId, delta) => {
+    setCartItems(prev => {
+      return prev.map(item => {
+        if (item.product.id === productId) {
+          const newQty = item.quantity + delta;
+          return newQty > 0 ? { ...item, quantity: newQty } : null;
+        }
+        return item;
+      }).filter(Boolean);
+    });
+  };
+
+  const handleRemoveFromCart = (productId) => {
+    setCartItems(prev => prev.filter(item => item.product.id !== productId));
+  };
+
+  const handleApplyCoupon = (codeToApply) => {
+    const code = (codeToApply || couponInput).trim().toUpperCase();
+    const found = INITIAL_COUPONS.find(c => c.code === code);
+    
+    if (!found) {
+      setCouponMessage({ type: "error", text: "Invalid coupon code. Try 'FIRST10' or 'RIDE999'." });
+      return;
+    }
+
+    if (found.minOrder && cartSubtotal < found.minOrder) {
+      setCouponMessage({ 
+        type: "error", 
+        text: `Coupon '${code}' requires a minimum cart value of ₹${found.minOrder}.` 
+      });
+      return;
+    }
+
+    setAppliedCoupon(found);
+    setCouponMessage({ type: "success", text: `Success! ${found.desc} applied.` });
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponMessage(null);
+    setCouponInput("");
+  };
+
+  const handlePlaceOrder = (e) => {
+    e.preventDefault();
+    if (cartItems.length === 0) {
+      return;
+    }
+
+    // Generate Unique Identifiers
+    const uniqueNumber = Math.floor(1000 + Math.random() * 9000);
+    const newOrderId = `ORD-2026-${uniqueNumber}`;
+    const newInvoiceNo = `INV-BCS-${uniqueNumber}`;
+    const nowTimestamp = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+    const newOrder = {
+      id: newOrderId,
+      invoiceNumber: newInvoiceNo,
+      date: nowTimestamp,
+      customer: { ...checkoutData },
+      items: cartItems.map(i => ({
+        ...i.product,
+        quantity: i.quantity,
+        unitPrice: i.product.price
+      })),
+      subtotal: cartSubtotal,
+      discount: discountAmount,
+      tax: calculatedTax,
+      shipping: shippingCharges,
+      total: finalGrandTotal,
+      couponApplied: appliedCoupon ? appliedCoupon.code : "None",
+      paymentMethod: checkoutData.paymentMethod === "cod" ? "Cash on Delivery (COD)" : "Razorpay / UPI Verified",
+      paymentStatus: checkoutData.paymentMethod === "cod" ? "Pending on Delivery" : "Paid Securely Online",
+      orderStatus: "Confirmed",
+      timeline: [
+        { time: nowTimestamp, status: "Order Created & Confirmed by Showroom" }
+      ]
+    };
+
+    // Update stock levels
+    setProducts(prevProducts => {
+      return prevProducts.map(p => {
+        const boughtItem = cartItems.find(ci => ci.product.id === p.id);
+        if (boughtItem) {
+          return { ...p, stock: Math.max(0, p.stock - boughtItem.quantity) };
+        }
+        return p;
+      });
+    });
+
+    setOrders(prev => [newOrder, ...prev]);
+    setActiveInvoiceOrder(newOrder);
+    setCartItems([]);
+    setAppliedCoupon(null);
+    setCurrentView("invoice");
+  };
+
+  const handleCancelOrder = (orderId, reason = "Customer requested cancellation") => {
+    setOrders(prev => prev.map(ord => {
+      if (ord.id === orderId) {
+        return {
+          ...ord,
+          orderStatus: "Cancelled",
+          cancellationReason: reason,
+          cancelledAt: new Date().toLocaleString('en-IN'),
+          timeline: [
+            ...ord.timeline,
+            { time: new Date().toLocaleString('en-IN'), status: `Order Cancelled: ${reason}` }
+          ]
+        };
+      }
+      return ord;
+    }));
+  };
+
+  const handlePrintInvoice = () => {
+    window.print();
+  };
+
+  const handleDownloadInvoicePDF = (orderToDownload) => {
+    const ord = orderToDownload || activeInvoiceOrder;
+    if (!ord) return;
+
+    // Build standalone formatted HTML print-to-PDF helper
+    const invoiceWindow = window.open('', '_blank');
+    if (!invoiceWindow) return;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Tax_Invoice_${ord.invoiceNumber}</title>
+        <style>
+          body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 25px; color: #1e293b; }
+          .header { border-bottom: 3px solid #dc2626; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+          .logo-text { font-size: 24px; font-weight: bold; color: #dc2626; }
+          .meta-box { display: flex; justify-content: space-between; margin-bottom: 25px; }
+          .box { width: 48%; border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+          th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 13px; }
+          th { background: #f8fafc; font-weight: 600; }
+          .text-right { text-align: right; }
+          .totals-wrap { margin-top: 20px; margin-left: auto; width: 350px; }
+          .totals-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #cbd5e1; }
+          .grand-total { font-weight: bold; font-size: 16px; color: #dc2626; border-top: 2px solid #dc2626; border-bottom: 2px solid #dc2626; }
+          .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #64748b; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <div class="logo-text">🚲 BHARAT CYCLE STORE</div>
+            <div style="font-size: 12px; color: #475569;">${STORE_ADDRESS}</div>
+            <div style="font-size: 12px; color: #475569;">Phone: ${STORE_PHONE} | GSTIN: 07AAECB2934Q1Z5</div>
+          </div>
+          <div style="text-align: right;">
+            <h2 style="margin: 0; color: #0f172a;">TAX INVOICE</h2>
+            <div style="font-size: 13px; font-weight: bold;">${ord.invoiceNumber}</div>
+            <div style="font-size: 12px; color: #64748b;">Order ID: ${ord.id}</div>
+            <div style="font-size: 12px; color: #64748b;">Date: ${ord.date}</div>
+          </div>
+        </div>
+
+        <div class="meta-box">
+          <div class="box">
+            <strong>BILLED TO:</strong><br/>
+            ${ord.customer.fullName}<br/>
+            ${ord.customer.address}, ${ord.customer.city}<br/>
+            ${ord.customer.state} - ${ord.customer.pincode}<br/>
+            Phone: ${ord.customer.mobile}<br/>
+            Email: ${ord.customer.email}
+          </div>
+          <div class="box">
+            <strong>PAYMENT & DISPATCH:</strong><br/>
+            Payment Method: <strong>${ord.paymentMethod}</strong><br/>
+            Payment Status: <strong>${ord.paymentStatus}</strong><br/>
+            Order Status: <strong>${ord.orderStatus}</strong><br/>
+            Authorized Hub: Central Northern Showroom
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Description / Model</th>
+              <th>Category</th>
+              <th>SKU</th>
+              <th class="text-right">Price</th>
+              <th class="text-right">Qty</th>
+              <th class="text-right">Total (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${ord.items.map((it, idx) => `
+              <tr>
+                <td>${idx + 1}</td>
+                <td><strong>${it.name}</strong><br/><small style="color: #64748b;">Brand: ${it.brand || 'BharatPro'}</small></td>
+                <td>${it.category}</td>
+                <td>${it.sku}</td>
+                <td class="text-right">₹${Number(it.unitPrice).toLocaleString('en-IN')}</td>
+                <td class="text-right">${it.quantity}</td>
+                <td class="text-right">₹${Number(it.unitPrice * it.quantity).toLocaleString('en-IN')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div class="totals-wrap">
+          <div class="totals-row"><span>Subtotal:</span><span>₹${Number(ord.subtotal).toLocaleString('en-IN')}</span></div>
+          <div class="totals-row"><span>Discount:</span><span style="color: green;">- ₹${Number(ord.discount).toLocaleString('en-IN')}</span></div>
+          <div class="totals-row"><span>GST (12%):</span><span>₹${Number(ord.tax).toFixed(2)}</span></div>
+          <div class="totals-row"><span>Shipping Charges:</span><span>${ord.shipping === 0 ? 'FREE' : '₹' + ord.shipping}</span></div>
+          <div class="totals-row grand-total"><span>Grand Total:</span><span>₹${Number(ord.total).toFixed(2)}</span></div>
+        </div>
+
+        <div class="footer">
+          <p>Thank you for choosing BHARAT CYCLE STORE! Ride Safe, Wear Your Helmet, and Keep Pedaling.</p>
+          <p>Warranty registration can be completed with this tax invoice copy at our authorized service network.</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    invoiceWindow.document.write(htmlContent);
+    invoiceWindow.document.close();
+    setTimeout(() => {
+      invoiceWindow.print();
+    }, 500);
+  };
+
+  const handleSendChatMessage = (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userText = chatInput.trim();
+    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    setChatMessages(prev => [...prev, { sender: "user", text: userText, time: timeNow }]);
+    setChatInput("");
+    setIsStoreTyping(true);
+
+    // Realistic cycling showroom specialist simulated response
+    setTimeout(() => {
+      let reply = "Thank you for reaching out! Our showroom cycling mechanics recommend choosing frame size by rider height: 26-27.5 inch wheels for up to 5ft 8in, and 29ers for taller trail riders. Do you want help checking stock or setting up a test ride?";
+      if (userText.toLowerCase().includes("discount") || userText.toLowerCase().includes("offer")) {
+        reply = "You can apply coupon 'FIRST10' at checkout for 10% off your first cycle! Also all orders above ₹1,999 get free doorstep delivery across India 🚲.";
+      } else if (userText.toLowerCase().includes("electric") || userText.toLowerCase().includes("ebike")) {
+        reply = "Our VoltRider Pulse E-Bike features high-torque 250W motors, pure throttle mode, 55km battery backup, and standard 2-year warranty on cells!";
+      }
+
+      setChatMessages(prev => [...prev, { sender: "store", text: reply, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+      setIsStoreTyping(false);
+    }, 1200);
+  };
+
+  const handleSubmitReview = (e) => {
+    e.preventDefault();
+    if (!newReviewForm.name || !newReviewForm.comment) return;
+
+    const newRev = {
+      id: `REV-${Date.now()}`,
+      productId: selectedProductId || "BCS-MTB-01",
+      userName: newReviewForm.name,
+      rating: Number(newReviewForm.rating),
+      date: new Date().toISOString().split('T')[0],
+      title: newReviewForm.title || "Verified Customer Feedback",
+      comment: newReviewForm.comment,
+      status: "pending" // Sent to admin approval queue
+    };
+
+    setReviews(prev => [newRev, ...prev]);
+    setNewReviewForm({ name: "", rating: 5, title: "", comment: "" });
+    setReviewSuccessMsg("Thank you! Your review has been submitted for showroom moderation.");
+    setTimeout(() => setReviewSuccessMsg(""), 4500);
+  };
+
+  const handleProductImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewProductForm(prev => ({ ...prev, image: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAddProductSubmit = (e) => {
+    e.preventDefault();
+    if (!newProductForm.name || !newProductForm.price) return;
+
+    const createdProduct = {
+      id: `BCS-PRD-${Date.now().toString().slice(-4)}`,
+      name: newProductForm.name,
+      category: newProductForm.category,
+      brand: newProductForm.brand || "BharatPro",
+      price: Number(newProductForm.price),
+      originalPrice: newProductForm.originalPrice ? Number(newProductForm.originalPrice) : Number(newProductForm.price) * 1.25,
+      rating: 5.0,
+      reviewsCount: 1,
+      stock: Number(newProductForm.stock) || 10,
+      sku: newProductForm.sku || `SKU-${Math.floor(1000 + Math.random()*9000)}`,
+      badge: "New Arrival",
+      image: newProductForm.image || "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80",
+      specs: {
+        wheelSize: newProductForm.wheelSize || "27.5 Inches",
+        gearCount: newProductForm.gearCount || "21 Speed",
+        frameMaterial: newProductForm.frameMaterial || "Lightweight Alloy",
+        brakes: "High Performance Disc Brakes",
+        riderHeight: "Universal Rider Fit"
+      },
+      description: newProductForm.description || "Brand new showroom cycle with genuine factory warranty and premium components."
+    };
+
+    setProducts(prev => [createdProduct, ...prev]);
+    setNewProductForm({
+      name: "",
+      category: "Mountain Bikes (MTB)",
+      brand: "BharatPro",
+      price: "",
+      originalPrice: "",
+      stock: 10,
+      sku: "",
+      wheelSize: "27.5 Inch",
+      gearCount: "21 Speed",
+      frameMaterial: "Alloy 6061",
+      description: "",
+      image: ""
+    });
+    setAdminTab("inventory");
+  };
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(item => {
+      const matchCat = selectedCategory === "All Categories" || item.category === selectedCategory;
+      const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          item.brand.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchPrice = item.price <= maxPriceFilter;
+      return matchCat && matchSearch && matchPrice;
+    }).sort((a, b) => {
+      if (sortBy === "price-low") return a.price - b.price;
+      if (sortBy === "price-high") return b.price - a.price;
+      if (sortBy === "rating") return b.rating - a.rating;
+      return 0; // featured default
+    });
+  }, [products, selectedCategory, searchQuery, maxPriceFilter, sortBy]);
+
+  const activeProduct = useMemo(() => {
+    return products.find(p => p.id === selectedProductId) || products[0];
+  }, [products, selectedProductId]);
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-rose-600 selection:text-white">
+      
+      {}
+      <div className="bg-gradient-to-r from-red-700 via-rose-600 to-red-800 text-white text-xs font-semibold px-4 py-2 flex justify-between items-center tracking-wide shadow-md">
+        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="bg-black/30 px-2 py-0.5 rounded text-[11px] uppercase tracking-wider font-bold">Festive Special</span>
+          <span>⚡ Flat 10% OFF with code <strong>FIRST10</strong> | Free Delivery on Orders Over ₹1,999 across India</span>
+        </div>
+        <div className="hidden md:flex items-center gap-4 text-xs font-medium">
+          <span className="flex items-center gap-1"><Phone size={13} /> {STORE_PHONE}</span>
+          <span className="flex items-center gap-1"><Truck size={13} /> Track Order</span>
+          <button 
+            onClick={() => setCurrentView("admin")} 
+            className="hover:text-amber-200 transition underline flex items-center gap-1"
+          >
+            <Lock size={12} /> Showroom Admin
+          </button>
+        </div>
+      </div>
+
+      {}
+      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20 gap-4">
+            
+            {/* Brand Logo & Typography */}
+            <div 
+              onClick={() => setCurrentView("home")} 
+              className="flex items-center gap-3 cursor-pointer group select-none flex-shrink-0"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 p-0.5 shadow-lg shadow-rose-600/30 group-hover:scale-105 transition duration-300">
+                <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                  <Bike className="w-7 h-7 text-rose-500 group-hover:rotate-12 transition duration-300" />
+                </div>
+              </div>
+              <div>
+                <span className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-1">
+                  BHARAT <span className="text-rose-500">CYCLE</span>
+                </span>
+                <span className="block text-[10px] font-bold text-slate-400 tracking-widest uppercase">
+                  Premium Showroom & Gear
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Links Navigation (Desktop) */}
+            <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-300">
+              <button 
+                onClick={() => { setCurrentView("home"); setSelectedCategory("All Categories"); }}
+                className={`transition hover:text-rose-400 ${currentView === 'home' ? 'text-rose-500' : ''}`}
+              >
+                Home
+              </button>
+              <button 
+                onClick={() => { setCurrentView("shop"); setSelectedCategory("All Categories"); }}
+                className={`transition hover:text-rose-400 ${currentView === 'shop' && selectedCategory === 'All Categories' ? 'text-rose-500' : ''}`}
+              >
+                All Cycles
+              </button>
+              <button 
+                onClick={() => { setCurrentView("shop"); setSelectedCategory("Mountain Bikes (MTB)"); }}
+                className={`transition hover:text-rose-400 ${selectedCategory === 'Mountain Bikes (MTB)' ? 'text-rose-500' : ''}`}
+              >
+                MTB
+              </button>
+              <button 
+                onClick={() => { setCurrentView("shop"); setSelectedCategory("Road Bikes"); }}
+                className={`transition hover:text-rose-400 ${selectedCategory === 'Road Bikes' ? 'text-rose-500' : ''}`}
+              >
+                Road Bikes
+              </button>
+              <button 
+                onClick={() => { setCurrentView("shop"); setSelectedCategory("Electric Bicycles (E-Bikes)"); }}
+                className={`transition hover:text-rose-400 ${selectedCategory === 'Electric Bicycles (E-Bikes)' ? 'text-rose-500' : ''}`}
+              >
+                E-Bikes
+              </button>
+              <button 
+                onClick={() => { setCurrentView("shop"); setSelectedCategory("Bicycle Helmets"); }}
+                className={`transition hover:text-rose-400 ${selectedCategory === 'Bicycle Helmets' ? 'text-rose-500' : ''}`}
+              >
+                Accessories
+              </button>
+              <button 
+                onClick={() => setCurrentView("my-orders")}
+                className={`transition hover:text-rose-400 ${currentView === 'my-orders' ? 'text-rose-500' : ''}`}
+              >
+                My Orders
+              </button>
+              <button 
+                onClick={() => setCurrentView("contact")}
+                className={`transition hover:text-rose-400 ${currentView === 'contact' ? 'text-rose-500' : ''}`}
+              >
+                Contact
+              </button>
+            </nav>
+
+            {/* Header Interactive Tools */}
+            <div className="flex items-center gap-3">
+              {/* Search Bar Input */}
+              <div className="relative hidden sm:block w-48 md:w-64">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <input 
+                  type="text"
+                  placeholder="Search bikes, helmets, parts..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    if (currentView !== "shop") setCurrentView("shop");
+                  }}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-full pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-rose-500 text-white placeholder-slate-400"
+                />
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery("")} 
+                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-white"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Shopping Cart Button */}
+              <button 
+                onClick={() => setCurrentView("cart")}
+                className="relative p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-full transition border border-slate-700 flex items-center justify-center shadow-md group"
+                title="View Cart"
+              >
+                <ShoppingBag className="w-5 h-5 text-rose-500 group-hover:scale-110 transition duration-200" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-600 to-rose-600 text-white text-[11px] font-black w-5 h-5 rounded-full flex items-center justify-center animate-pulse shadow-md">
+                    {cartItems.reduce((acc, i) => acc + i.quantity, 0)}
+                  </span>
+                )}
+              </button>
+
+              {/* Admin Portal Button */}
+              <button 
+                onClick={() => setCurrentView("admin")}
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600/10 border border-red-500/30 text-red-400 text-xs font-semibold hover:bg-red-600 hover:text-white transition"
+              >
+                <Lock size={13} /> Admin
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {}
+      <main className="flex-1">
+        
+        {/* VIEW 1: HOME PAGE */}
+        {currentView === "home" && (
+          <div>
+            {/* Hero Banner Section */}
+            <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 py-16 md:py-24 border-b border-slate-800">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(225,29,72,0.15),transparent_50%)] pointer-events-none" />
+              
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                  <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-wider">
+                      <Bike size={15} /> Official Indian Showroom & Factory Partner
+                    </div>
+                    
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
+                      WELCOME TO <br />
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-500 to-amber-400">
+                        BHARAT CYCLE STORE
+                      </span>
+                    </h1>
+
+                    <p className="text-lg text-slate-300 font-medium">
+                      "{STORE_TAGLINE}"
+                    </p>
+                    <p className="text-sm sm:text-base text-slate-400 max-w-xl">
+                      Discover India's finest collection of all-terrain mountain bikes, aero road racers, durable commuter cycles, kids' bikes, and certified accessories with full showroom warranty.
+                    </p>
+
+                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                      <button 
+                        onClick={() => { setCurrentView("shop"); setSelectedCategory("All Categories"); }}
+                        className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-sm shadow-lg shadow-rose-600/30 flex items-center gap-2 group transition duration-300"
+                      >
+                        Shop Now <ArrowRight size={16} className="group-hover:translate-x-1 transition duration-200" />
+                      </button>
+                      <button 
+                        onClick={() => { setCurrentView("shop"); setSelectedCategory("Mountain Bikes (MTB)"); }}
+                        className="px-7 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm border border-slate-700 transition"
+                      >
+                        Explore MTB Trail Collection
+                      </button>
+                    </div>
+
+                    {/* Trust Badges Bar */}
+                    <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-800/80">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center flex-shrink-0">
+                          <ShieldCheck size={20} />
+                        </div>
+                        <div className="text-left">
+                          <h4 className="text-xs font-bold text-white">Lifetime Frame</h4>
+                          <p className="text-[11px] text-slate-400">Showroom Warranty</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center flex-shrink-0">
+                          <Wrench size={20} />
+                        </div>
+                        <div className="text-left">
+                          <h4 className="text-xs font-bold text-white">90% Pre-Assembled</h4>
+                          <p className="text-[11px] text-slate-400">Toolkit included</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center flex-shrink-0">
+                          <Truck size={20} />
+                        </div>
+                        <div className="text-left">
+                          <h4 className="text-xs font-bold text-white">Express Freight</h4>
+                          <p className="text-[11px] text-slate-400">Free above ₹1,999</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Featured Hero Product Card Showcase */}
+                  <div className="lg:col-span-5">
+                    <div className="relative rounded-3xl bg-gradient-to-b from-slate-800 to-slate-900 p-1 border border-slate-700 shadow-2xl shadow-rose-950/40">
+                      <div className="relative rounded-[22px] overflow-hidden bg-slate-950 p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <span className="px-3 py-1 rounded-full bg-rose-600 text-white text-xs font-bold uppercase tracking-wider">
+                            Featured Showstopper
+                          </span>
+                          <span className="text-amber-400 text-xs font-bold flex items-center gap-1">
+                            <Star size={14} fill="currentColor" /> 4.9 (42 Reviews)
+                          </span>
+                        </div>
+                        
+                        <div className="aspect-video relative rounded-xl overflow-hidden mb-5 group">
+                          <img 
+                            src={INITIAL_PRODUCTS[0].image} 
+                            alt="Thunderbolt Apex MTB" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                          <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-md text-xs font-bold text-white">
+                            Shimano 21-Speed • 29" Alloy
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 mb-4">
+                          <h3 className="text-xl font-bold text-white">{INITIAL_PRODUCTS[0].name}</h3>
+                          <p className="text-xs text-slate-400 line-clamp-2">{INITIAL_PRODUCTS[0].description}</p>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                          <div>
+                            <span className="text-xs text-slate-400 line-through mr-2">₹{INITIAL_PRODUCTS[0].originalPrice.toLocaleString('en-IN')}</span>
+                            <span className="text-2xl font-black text-rose-500">₹{INITIAL_PRODUCTS[0].price.toLocaleString('en-IN')}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => {
+                                setSelectedProductId(INITIAL_PRODUCTS[0].id);
+                                setCurrentView("product-detail");
+                              }}
+                              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200"
+                            >
+                              Details
+                            </button>
+                            <button 
+                              onClick={() => {
+                                handleAddToCart(INITIAL_PRODUCTS[0]);
+                                setCurrentView("cart");
+                              }}
+                              className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white shadow-md shadow-rose-600/30 flex items-center gap-1.5"
+                            >
+                              <ShoppingBag size={14} /> Buy Now
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Category Quick Navigator Cards */}
+            <section className="py-12 bg-slate-950 border-b border-slate-900">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-black text-white">Popular Showroom Categories</h2>
+                    <p className="text-sm text-slate-400">Tailored bikes and safety gear for every age and track style</p>
+                  </div>
+                  <button 
+                    onClick={() => { setCurrentView("shop"); setSelectedCategory("All Categories"); }}
+                    className="text-rose-500 hover:text-rose-400 text-sm font-bold flex items-center gap-1 mt-2 md:mt-0"
+                  >
+                    View All 20+ Categories <ChevronRight size={16} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                  {[
+                    { title: "Mountain MTB", count: "12+ Models", cat: "Mountain Bikes (MTB)", icon: "🚵" },
+                    { title: "Road Speed", count: "8+ Models", cat: "Road Bikes", icon: "🚴" },
+                    { title: "Electric E-Bike", count: "6+ Models", cat: "Electric Bicycles (E-Bikes)", icon: "⚡" },
+                    { title: "Kids Bikes", count: "15+ Models", cat: "Kids' Bicycles", icon: "🧒" },
+                    { title: "Hybrid City", count: "10+ Models", cat: "Hybrid Bicycles", icon: "🏙️" },
+                    { title: "Helmets & Gear", count: "40+ Accessories", cat: "Bicycle Helmets", icon: "🪖" },
+                  ].map((card, idx) => (
+                    <div 
+                      key={idx}
+                      onClick={() => {
+                        setSelectedCategory(card.cat);
+                        setCurrentView("shop");
+                      }}
+                      className="group cursor-pointer rounded-2xl bg-slate-900 border border-slate-800 hover:border-rose-500/50 p-4 text-center transition duration-300 hover:-translate-y-1 shadow-md hover:shadow-rose-900/20"
+                    >
+                      <div className="text-3xl mb-2 group-hover:scale-125 transition duration-300">{card.icon}</div>
+                      <h3 className="font-bold text-sm text-white group-hover:text-rose-400 transition">{card.title}</h3>
+                      <p className="text-[11px] text-slate-400 mt-1">{card.count}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Featured Showcase Catalog Preview */}
+            <section className="py-16 bg-slate-900/50 border-b border-slate-800">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <span className="text-rose-500 text-xs font-black tracking-widest uppercase">Verified Showroom Lineup</span>
+                    <h2 className="text-3xl font-black text-white">Trending Cycles & Essential Gear</h2>
+                  </div>
+                  <button 
+                    onClick={() => setCurrentView("shop")} 
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white border border-slate-700"
+                  >
+                    View Catalog
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {products.slice(0, 4).map(product => (
+                    <ProductCard 
+                      key={product.id}
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      onViewDetails={(id) => {
+                        setSelectedProductId(id);
+                        setCurrentView("product-detail");
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Promotional Offer Banner */}
+            <section className="py-12 bg-gradient-to-r from-red-950 via-slate-900 to-rose-950 border-b border-slate-800">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-red-900/40 to-slate-900/80 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="space-y-2 text-center md:text-left">
+                    <span className="bg-rose-500 text-white text-[11px] font-black uppercase px-2.5 py-1 rounded">Exclusive Welcome Gift</span>
+                    <h3 className="text-2xl sm:text-3xl font-black text-white">Ready for your maiden cycling adventure?</h3>
+                    <p className="text-sm text-slate-300 max-w-xl">
+                      Get 10% instant discount on your initial checkout with coupon <strong>FIRST10</strong> or save ₹1,500 on all pro cycles with code <strong>BHARATFEST</strong>.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => {
+                        handleApplyCoupon("FIRST10");
+                        setCurrentView("shop");
+                      }}
+                      className="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-rose-700 font-extrabold text-sm shadow-xl transition"
+                    >
+                      Apply FIRST10 Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Verified Showroom Customer Reviews Section */}
+            <section className="py-16 bg-slate-950">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                  <span className="text-rose-500 text-xs font-black tracking-widest uppercase">Rider Testimonials</span>
+                  <h2 className="text-3xl font-black text-white mt-1">Loved by Cyclists Across India</h2>
+                  <p className="text-sm text-slate-400 mt-2">Read real experiences from trail enthusiasts, triathletes, and daily commuters.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {reviews.filter(r => r.status === "approved").map(rev => (
+                    <div key={rev.id} className="rounded-2xl bg-slate-900 border border-slate-800 p-6 space-y-3 relative shadow-md">
+                      <div className="flex items-center justify-between">
+                        <div className="flex text-amber-400">
+                          {[...Array(5)].map((_, i) => (
+                            <Star 
+                              key={i} 
+                              size={16} 
+                              fill={i < rev.rating ? "currentColor" : "none"} 
+                              className={i < rev.rating ? "text-amber-400" : "text-slate-600"} 
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[11px] text-slate-500">{rev.date}</span>
+                      </div>
+                      <h4 className="font-bold text-white text-sm">{rev.title}</h4>
+                      <p className="text-xs text-slate-300 leading-relaxed italic">"{rev.comment}"</p>
+                      <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                        <span className="font-semibold text-rose-400 flex items-center gap-1">
+                          <CheckCircle size={13} /> {rev.userName}
+                        </span>
+                        <span className="text-emerald-400 text-[10px] font-bold uppercase">Verified Showroom Rider</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* VIEW 2: PRODUCT CATALOG & FILTERING (SHOP) */}
+        {currentView === "shop" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            {/* Header Breadcrumb & Search Summary */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+              <div>
+                <h1 className="text-3xl font-black text-white">Showroom Bicycle & Gear Catalog</h1>
+                <p className="text-sm text-slate-400">
+                  Showing {filteredProducts.length} verified products in <span className="text-rose-400 font-bold">{selectedCategory}</span>
+                </p>
+              </div>
+
+              {/* Sort Selector */}
+              <div className="flex items-center gap-3">
+                <label className="text-xs font-semibold text-slate-400">Sort By:</label>
+                <select 
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-slate-900 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
+                >
+                  <option value="featured">Showroom Featured</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="rating">Highest Customer Rating</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
+              {/* Left Filter Sidebar */}
+              <aside className="lg:col-span-3 space-y-6">
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-6">
+                  
+                  {/* Category Filter list */}
+                  <div>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <Filter size={15} className="text-rose-500" /> Categories
+                    </h3>
+                    <div className="space-y-1 max-h-72 overflow-y-auto pr-1">
+                      {CATEGORIES_LIST.map((cat, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedCategory(cat)}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-between ${
+                            selectedCategory === cat 
+                              ? "bg-rose-600 text-white font-bold" 
+                              : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                          }`}
+                        >
+                          <span className="truncate">{cat}</span>
+                          {selectedCategory === cat && <Check size={12} />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price Range Filter Slider */}
+                  <div className="pt-4 border-t border-slate-800">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider">Max Price</h3>
+                      <span className="text-xs font-bold text-rose-400">₹{maxPriceFilter.toLocaleString('en-IN')}</span>
+                    </div>
+                    <input 
+                      type="range"
+                      min="500"
+                      max="60000"
+                      step="500"
+                      value={maxPriceFilter}
+                      onChange={(e) => setMaxPriceFilter(Number(e.target.value))}
+                      className="w-full accent-rose-500 cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                      <span>₹500</span>
+                      <span>₹60,000+</span>
+                    </div>
+                  </div>
+
+                  {/* Quick Reset Filters */}
+                  <button 
+                    onClick={() => {
+                      setSelectedCategory("All Categories");
+                      setMaxPriceFilter(60000);
+                      setSearchQuery("");
+                    }}
+                    className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5"
+                  >
+                    <RefreshCw size={13} /> Reset Filters
+                  </button>
+                </div>
+              </aside>
+
+              {/* Product Grid Area */}
+              <div className="lg:col-span-9">
+                {filteredProducts.length === 0 ? (
+                  <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center space-y-4">
+                    <Bike className="w-16 h-16 text-slate-600 mx-auto" />
+                    <h3 className="text-xl font-bold text-white">No products found matching filters</h3>
+                    <p className="text-xs text-slate-400 max-w-md mx-auto">
+                      Try resetting your price slider or searching for a different bicycle model or accessory type.
+                    </p>
+                    <button 
+                      onClick={() => { setSelectedCategory("All Categories"); setMaxPriceFilter(60000); }}
+                      className="px-5 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold"
+                    >
+                      Clear All Filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {filteredProducts.map(product => (
+                      <ProductCard 
+                        key={product.id}
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                        onViewDetails={(id) => {
+                          setSelectedProductId(id);
+                          setCurrentView("product-detail");
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 3: PRODUCT DETAIL MODAL / PAGE */}
+        {currentView === "product-detail" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <button 
+              onClick={() => setCurrentView("shop")}
+              className="mb-6 inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-rose-400 transition"
+            >
+              ← Back to Cycle Catalog
+            </button>
+
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 lg:p-10 shadow-2xl">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                
+                {/* Product Image Gallery with Zoom Preview */}
+                <div className="lg:col-span-6 space-y-4">
+                  <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 relative group">
+                    <img 
+                      src={activeProduct.image} 
+                      alt={activeProduct.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                    />
+                    <div className="absolute top-4 left-4 bg-rose-600 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                      {activeProduct.badge || "Verified Quality"}
+                    </div>
+                    <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md px-3 py-1 rounded-lg text-[11px] text-slate-300">
+                      Hover to zoom
+                    </div>
+                  </div>
+
+                  {/* Trust guarantees badge */}
+                  <div className="grid grid-cols-3 gap-3 p-4 bg-slate-950/60 rounded-xl border border-slate-800 text-center">
+                    <div>
+                      <div className="text-rose-500 text-xs font-bold">100% Genuine</div>
+                      <div className="text-[10px] text-slate-400">Direct From Brand</div>
+                    </div>
+                    <div>
+                      <div className="text-emerald-400 text-xs font-bold">Free Assembly</div>
+                      <div className="text-[10px] text-slate-400">Tools & Guide Inside</div>
+                    </div>
+                    <div>
+                      <div className="text-amber-400 text-xs font-bold">Easy 7-Day</div>
+                      <div className="text-[10px] text-slate-400">Transit Protection</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Product Information & Purchase Panel */}
+                <div className="lg:col-span-6 space-y-6">
+                  <div>
+                    <span className="text-rose-500 text-xs font-black uppercase tracking-wider">
+                      {activeProduct.category} • SKU: {activeProduct.sku}
+                    </span>
+                    <h1 className="text-3xl font-black text-white mt-1">{activeProduct.name}</h1>
+                    <div className="flex items-center gap-4 mt-2">
+                      <div className="flex items-center text-amber-400 text-xs font-bold">
+                        <Star size={16} fill="currentColor" className="mr-1" />
+                        {activeProduct.rating} ({activeProduct.reviewsCount} verified reviews)
+                      </div>
+                      <span className="text-slate-600">|</span>
+                      <span className={`text-xs font-bold ${activeProduct.stock > 0 ? 'text-emerald-400' : 'text-rose-500'}`}>
+                        {activeProduct.stock > 0 ? `In Stock (${activeProduct.stock} units left)` : 'Out of Stock'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Pricing Display */}
+                  <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800/80 flex items-baseline gap-4">
+                    <span className="text-3xl font-black text-rose-500">₹{activeProduct.price.toLocaleString('en-IN')}</span>
+                    {activeProduct.originalPrice > activeProduct.price && (
+                      <>
+                        <span className="text-sm text-slate-400 line-through">₹{activeProduct.originalPrice.toLocaleString('en-IN')}</span>
+                        <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                          Save ₹{(activeProduct.originalPrice - activeProduct.price).toLocaleString('en-IN')}
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    {activeProduct.description}
+                  </p>
+
+                  {/* Technical Specifications Grid */}
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Technical Specifications</h3>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      {Object.entries(activeProduct.specs).map(([key, val], idx) => (
+                        <div key={idx} className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
+                          <span className="text-slate-400 block capitalize">{key.replace(/([A-Z])/g, ' $1')}:</span>
+                          <span className="font-bold text-white">{val}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Purchase Action Buttons */}
+                  <div className="flex items-center gap-4 pt-4 border-t border-slate-800">
+                    <button 
+                      onClick={() => handleAddToCart(activeProduct, 1)}
+                      className="flex-1 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 transition flex items-center justify-center gap-2"
+                    >
+                      <ShoppingCart size={16} /> Add to Cart
+                    </button>
+                    <button 
+                      onClick={() => {
+                        handleAddToCart(activeProduct, 1);
+                        setCurrentView("cart");
+                      }}
+                      className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-sm shadow-xl shadow-rose-600/30 transition flex items-center justify-center gap-2"
+                    >
+                      Buy Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Verified Product Reviews & Submission Section */}
+              <div className="mt-12 pt-10 border-t border-slate-800">
+                <h2 className="text-2xl font-black text-white mb-6">Customer Ratings & Reviews</h2>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                  {/* Left: Review List */}
+                  <div className="lg:col-span-7 space-y-4">
+                    {reviews.filter(r => r.productId === activeProduct.id && r.status === "approved").length === 0 ? (
+                      <div className="p-6 bg-slate-950 rounded-2xl text-center text-slate-400 text-xs">
+                        No approved reviews yet for this cycle. Be the first to share your riding feedback!
+                      </div>
+                    ) : (
+                      reviews.filter(r => r.productId === activeProduct.id && r.status === "approved").map(rev => (
+                        <div key={rev.id} className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="font-bold text-sm text-white">{rev.userName}</span>
+                            <div className="flex text-amber-400">
+                              {[...Array(rev.rating)].map((_, i) => <Star key={i} size={13} fill="currentColor" />)}
+                            </div>
+                          </div>
+                          <h5 className="font-semibold text-xs text-rose-400">{rev.title}</h5>
+                          <p className="text-xs text-slate-300">{rev.comment}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Right: Write Review Form */}
+                  <div className="lg:col-span-5 bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Write a Verified Review</h3>
+                    {reviewSuccessMsg && (
+                      <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-xl mb-4">
+                        {reviewSuccessMsg}
+                      </div>
+                    )}
+                    <form onSubmit={handleSubmitReview} className="space-y-3">
+                      <div>
+                        <label className="text-[11px] font-semibold text-slate-400 block mb-1">Your Full Name</label>
+                        <input 
+                          type="text" 
+                          required
+                          value={newReviewForm.name}
+                          onChange={(e) => setNewReviewForm({ ...newReviewForm, name: e.target.value })}
+                          placeholder="e.g. Sumeet Joshi"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-semibold text-slate-400 block mb-1">Star Rating (1-5)</label>
+                        <select 
+                          value={newReviewForm.rating}
+                          onChange={(e) => setNewReviewForm({ ...newReviewForm, rating: e.target.value })}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white"
+                        >
+                          <option value="5">⭐⭐⭐⭐⭐ 5 Stars - Exceptional</option>
+                          <option value="4">⭐⭐⭐⭐ 4 Stars - Very Good</option>
+                          <option value="3">⭐⭐⭐ 3 Stars - Average</option>
+                          <option value="2">⭐⭐ 2 Stars - Needs Improvement</option>
+                          <option value="1">⭐ 1 Star - Disappointed</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-semibold text-slate-400 block mb-1">Review Headline</label>
+                        <input 
+                          type="text" 
+                          value={newReviewForm.title}
+                          onChange={(e) => setNewReviewForm({ ...newReviewForm, title: e.target.value })}
+                          placeholder="e.g. Perfect for hill trails"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-semibold text-slate-400 block mb-1">Your Feedback</label>
+                        <textarea 
+                          rows={3}
+                          required
+                          value={newReviewForm.comment}
+                          onChange={(e) => setNewReviewForm({ ...newReviewForm, comment: e.target.value })}
+                          placeholder="How did the gears, frame, and brakes perform?"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white"
+                        />
+                      </div>
+                      <button 
+                        type="submit"
+                        className="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow-md transition"
+                      >
+                        Submit Review for Approval
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 4: SHOPPING CART */}
+        {currentView === "cart" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <h1 className="text-3xl font-black text-white mb-2">Showroom Shopping Cart</h1>
+            <p className="text-sm text-slate-400 mb-8">Review selected bicycles, parts, and apply coupon codes</p>
+
+            {cartItems.length === 0 ? (
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-16 text-center space-y-5">
+                <ShoppingBag className="w-16 h-16 text-slate-600 mx-auto" />
+                <h3 className="text-xl font-bold text-white">Your cycle cart is empty</h3>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                  Explore our premium Mountain Bikes, Road Racers, and cycling gear to begin your journey.
+                </p>
+                <button 
+                  onClick={() => setCurrentView("shop")}
+                  className="px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition"
+                >
+                  Explore Showroom Catalog
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                {/* Cart Line Items Table */}
+                <div className="lg:col-span-8 space-y-4">
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div className="divide-y divide-slate-800">
+                      {cartItems.map(item => (
+                        <div key={item.product.id} className="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                          <div className="flex items-center gap-4 w-full sm:w-auto">
+                            <img 
+                              src={item.product.image} 
+                              alt={item.product.name} 
+                              className="w-20 h-20 rounded-xl object-cover bg-slate-950 flex-shrink-0"
+                            />
+                            <div>
+                              <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">{item.product.category}</span>
+                              <h4 className="font-bold text-sm text-white">{item.product.name}</h4>
+                              <p className="text-xs text-slate-400">SKU: {item.product.sku}</p>
+                              <p className="text-xs font-bold text-rose-400 mt-1">₹{item.product.price.toLocaleString('en-IN')}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
+                            {/* Quantity Controls */}
+                            <div className="flex items-center border border-slate-700 rounded-lg overflow-hidden bg-slate-950">
+                              <button 
+                                onClick={() => handleUpdateQuantity(item.product.id, -1)}
+                                className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                              >
+                                <Minus size={13} />
+                              </button>
+                              <span className="px-3 text-xs font-bold text-white">{item.quantity}</span>
+                              <button 
+                                onClick={() => handleUpdateQuantity(item.product.id, 1)}
+                                className="px-2.5 py-1 text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                              >
+                                <Plus size={13} />
+                              </button>
+                            </div>
+
+                            <div className="text-right">
+                              <div className="text-sm font-black text-white">
+                                ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
+                              </div>
+                              <button 
+                                onClick={() => handleRemoveFromCart(item.product.id)}
+                                className="text-[11px] text-red-400 hover:text-red-300 font-semibold flex items-center gap-1 mt-1"
+                              >
+                                <Trash2 size={12} /> Remove
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-2">
+                    <button 
+                      onClick={() => setCurrentView("shop")}
+                      className="text-xs font-semibold text-slate-400 hover:text-white transition"
+                    >
+                      ← Continue Shopping
+                    </button>
+                    <button 
+                      onClick={() => setCartItems([])}
+                      className="text-xs font-semibold text-red-400 hover:text-red-300 transition"
+                    >
+                      Clear All Items
+                    </button>
+                  </div>
+                </div>
+
+                {/* Cart Summary & Coupon Section */}
+                <div className="lg:col-span-4 space-y-6">
+                  
+                  {/* Coupon Card */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+                    <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <Tag size={14} className="text-rose-500" /> Apply Showroom Coupon
+                    </h4>
+                    
+                    {appliedCoupon ? (
+                      <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between">
+                        <div>
+                          <div className="text-xs font-bold text-emerald-400">{appliedCoupon.code} Applied</div>
+                          <div className="text-[10px] text-slate-300">{appliedCoupon.desc}</div>
+                        </div>
+                        <button 
+                          onClick={handleRemoveCoupon} 
+                          className="text-slate-400 hover:text-white text-xs underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="flex gap-2">
+                          <input 
+                            type="text"
+                            placeholder="Enter Code (e.g. FIRST10)"
+                            value={couponInput}
+                            onChange={(e) => setCouponInput(e.target.value)}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white uppercase"
+                          />
+                          <button 
+                            onClick={() => handleApplyCoupon()}
+                            className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl transition"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                        {couponMessage && (
+                          <p className={`text-[11px] mt-2 ${couponMessage.type === 'error' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                            {couponMessage.text}
+                          </p>
+                        )}
+                        <div className="mt-3 flex gap-2">
+                          <button 
+                            onClick={() => handleApplyCoupon("FIRST10")} 
+                            className="text-[10px] bg-slate-800 hover:bg-slate-700 text-rose-300 px-2 py-1 rounded border border-rose-500/20"
+                          >
+                            FIRST10 (10% Off)
+                          </button>
+                          <button 
+                            onClick={() => handleApplyCoupon("RIDE999")} 
+                            className="text-[10px] bg-slate-800 hover:bg-slate-700 text-rose-300 px-2 py-1 rounded border border-rose-500/20"
+                          >
+                            RIDE999 (15% Off)
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Summary Breakdown */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Order Summary</h3>
+                    
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between text-slate-400">
+                        <span>Items Subtotal:</span>
+                        <span className="text-white font-semibold">₹{cartSubtotal.toLocaleString('en-IN')}</span>
+                      </div>
+                      
+                      {discountAmount > 0 && (
+                        <div className="flex justify-between text-emerald-400 font-semibold">
+                          <span>Discount Applied:</span>
+                          <span>- ₹{discountAmount.toLocaleString('en-IN')}</span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between text-slate-400">
+                        <span>GST (12% Cycle Tax):</span>
+                        <span className="text-white font-semibold">₹{calculatedTax.toFixed(2)}</span>
+                      </div>
+
+                      <div className="flex justify-between text-slate-400">
+                        <span>Showroom Logistics:</span>
+                        <span className="text-white font-semibold">
+                          {shippingCharges === 0 ? <span className="text-emerald-400 font-bold">FREE</span> : `₹${shippingCharges}`}
+                        </span>
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-800 flex justify-between items-baseline">
+                        <span className="text-sm font-bold text-white">Final Payable Amount:</span>
+                        <span className="text-xl font-black text-rose-500">₹{finalGrandTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => setCurrentView("checkout")}
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-sm shadow-xl shadow-rose-600/30 transition flex items-center justify-center gap-2"
+                    >
+                      Proceed to Secure Checkout <ArrowRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* VIEW 5: CHECKOUT & PAYMENT SELECTION */}
+        {currentView === "checkout" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <h1 className="text-3xl font-black text-white mb-2">Showroom Checkout</h1>
+            <p className="text-sm text-slate-400 mb-8">Provide shipping information and choose verified payment gateway</p>
+
+            <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              
+              {/* Shipping & Billing Form */}
+              <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <MapPin size={16} className="text-rose-500" /> Customer & Delivery Details
+                </h3>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1.5">Full Name *</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={checkoutData.fullName}
+                      onChange={(e) => setCheckoutData({ ...checkoutData, fullName: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1.5">10-Digit Mobile Number *</label>
+                    <input 
+                      type="tel" 
+                      required
+                      value={checkoutData.mobile}
+                      onChange={(e) => setCheckoutData({ ...checkoutData, mobile: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-1.5">Email Address (For Tax Invoice & Tracking) *</label>
+                  <input 
+                    type="email" 
+                    required
+                    value={checkoutData.email}
+                    onChange={(e) => setCheckoutData({ ...checkoutData, email: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-1.5">Showroom Delivery Address *</label>
+                  <textarea 
+                    rows={2}
+                    required
+                    value={checkoutData.address}
+                    onChange={(e) => setCheckoutData({ ...checkoutData, address: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1.5">City *</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={checkoutData.city}
+                      onChange={(e) => setCheckoutData({ ...checkoutData, city: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1.5">State *</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={checkoutData.state}
+                      onChange={(e) => setCheckoutData({ ...checkoutData, state: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1.5">PIN Code *</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={checkoutData.pincode}
+                      onChange={(e) => setCheckoutData({ ...checkoutData, pincode: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Payment Selection Options */}
+                <div className="pt-4 border-t border-slate-800 space-y-3">
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Select Payment Mode</h3>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label className={`p-4 rounded-2xl border cursor-pointer flex items-center gap-3 transition ${
+                      checkoutData.paymentMethod === 'cod' 
+                        ? 'border-rose-500 bg-rose-500/10' 
+                        : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                    }`}>
+                      <input 
+                        type="radio" 
+                        name="payment" 
+                        checked={checkoutData.paymentMethod === 'cod'} 
+                        onChange={() => setCheckoutData({ ...checkoutData, paymentMethod: 'cod' })}
+                        className="accent-rose-500"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-white">Cash on Delivery (COD)</div>
+                        <div className="text-[10px] text-slate-400">Pay when bike reaches your doorstep</div>
+                      </div>
+                    </label>
+
+                    <label className={`p-4 rounded-2xl border cursor-pointer flex items-center gap-3 transition ${
+                      checkoutData.paymentMethod === 'razorpay' 
+                        ? 'border-rose-500 bg-rose-500/10' 
+                        : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                    }`}>
+                      <input 
+                        type="radio" 
+                        name="payment" 
+                        checked={checkoutData.paymentMethod === 'razorpay'} 
+                        onChange={() => setCheckoutData({ ...checkoutData, paymentMethod: 'razorpay' })}
+                        className="accent-rose-500"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-white">UPI / Razorpay / NetBanking</div>
+                        <div className="text-[10px] text-slate-400">Instant secure online verification</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Final Verification Side */}
+              <div className="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Cart Confirmation</h3>
+                
+                <div className="max-h-60 overflow-y-auto divide-y divide-slate-800 pr-1">
+                  {cartItems.map(it => (
+                    <div key={it.product.id} className="py-2.5 flex justify-between items-center text-xs">
+                      <div>
+                        <div className="font-semibold text-white">{it.product.name}</div>
+                        <div className="text-slate-400">Qty: {it.quantity} × ₹{it.product.price.toLocaleString('en-IN')}</div>
+                      </div>
+                      <span className="font-bold text-slate-200">
+                        ₹{(it.product.price * it.quantity).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-4 border-t border-slate-800 space-y-2 text-xs">
+                  <div className="flex justify-between text-slate-400">
+                    <span>Subtotal:</span>
+                    <span>₹{cartSubtotal.toLocaleString('en-IN')}</span>
+                  </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-emerald-400 font-semibold">
+                      <span>Discount ({appliedCoupon?.code}):</span>
+                      <span>- ₹{discountAmount.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-slate-400">
+                    <span>GST (12%):</span>
+                    <span>₹{calculatedTax.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Shipping Charges:</span>
+                    <span>{shippingCharges === 0 ? "FREE" : `₹${shippingCharges}`}</span>
+                  </div>
+                  <div className="pt-3 border-t border-slate-800 flex justify-between text-base font-black text-rose-500">
+                    <span>Total Amount:</span>
+                    <span>₹{finalGrandTotal.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <button 
+                  type="submit"
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-sm shadow-xl shadow-rose-600/30 transition flex items-center justify-center gap-2"
+                >
+                  <CheckCircle size={18} /> Confirm Order & Generate Tax Invoice
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* VIEW 6: AUTOMATIC BILLING & INVOICE GENERATION */}
+        {currentView === "invoice" && activeInvoiceOrder && (
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            {/* Action Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 print:hidden">
+              <button 
+                onClick={() => setCurrentView("shop")}
+                className="text-xs font-semibold text-slate-400 hover:text-white"
+              >
+                ← Continue Shopping
+              </button>
+
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={handlePrintInvoice}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-1.5 transition"
+                >
+                  <Printer size={14} /> Print Invoice
+                </button>
+                <button 
+                  onClick={() => handleDownloadInvoicePDF(activeInvoiceOrder)}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-md shadow-rose-600/30 flex items-center gap-1.5 transition"
+                >
+                  <Download size={14} /> Download PDF
+                </button>
+                <button 
+                  onClick={() => setCurrentView("my-orders")}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold rounded-xl border border-slate-700 transition"
+                >
+                  Track in My Orders
+                </button>
+              </div>
+            </div>
+
+            {/* Official Tax Invoice Container */}
+            <div className="bg-white text-slate-900 rounded-3xl p-8 sm:p-12 shadow-2xl border border-slate-200">
+              
+              {/* Invoice Header */}
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-6 pb-6 border-b-2 border-rose-600">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Bike className="w-8 h-8 text-rose-600" />
+                    <span className="text-2xl font-black tracking-tight text-slate-900">
+                      BHARAT <span className="text-rose-600">CYCLE STORE</span>
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 max-w-sm">{STORE_ADDRESS}</p>
+                  <p className="text-xs text-slate-600">Phone: {STORE_PHONE} | GSTIN: 07AAECB2934Q1Z5</p>
+                </div>
+
+                <div className="sm:text-right">
+                  <span className="inline-block bg-rose-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded mb-1">
+                    Official Tax Invoice
+                  </span>
+                  <h3 className="text-xl font-black text-slate-900">{activeInvoiceOrder.invoiceNumber}</h3>
+                  <p className="text-xs text-slate-500 font-semibold">Order ID: {activeInvoiceOrder.id}</p>
+                  <p className="text-xs text-slate-500">Date: {activeInvoiceOrder.date}</p>
+                </div>
+              </div>
+
+              {/* Billed To / Shipping Coordinates */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 my-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
+                <div>
+                  <h4 className="font-bold text-rose-600 uppercase tracking-wider mb-1">Customer / Billed To</h4>
+                  <div className="font-bold text-slate-800 text-sm">{activeInvoiceOrder.customer.fullName}</div>
+                  <div className="text-slate-600">{activeInvoiceOrder.customer.address}</div>
+                  <div className="text-slate-600">{activeInvoiceOrder.customer.city}, {activeInvoiceOrder.customer.state} - {activeInvoiceOrder.customer.pincode}</div>
+                  <div className="text-slate-600 mt-1">Phone: {activeInvoiceOrder.customer.mobile}</div>
+                  <div className="text-slate-600">Email: {activeInvoiceOrder.customer.email}</div>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-rose-600 uppercase tracking-wider mb-1">Payment & Dispatch</h4>
+                  <div className="text-slate-700">Payment Mode: <strong>{activeInvoiceOrder.paymentMethod}</strong></div>
+                  <div className="text-slate-700">Payment Status: <strong>{activeInvoiceOrder.paymentStatus}</strong></div>
+                  <div className="text-slate-700">Order Status: <strong className="text-rose-600">{activeInvoiceOrder.orderStatus}</strong></div>
+                  <div className="text-slate-700">Dispatch Hub: Bharat Cycle Store Central Showroom</div>
+                </div>
+              </div>
+
+              {/* Product Line Items */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-slate-100 text-slate-700 border-b border-slate-200">
+                      <th className="py-2.5 px-3">#</th>
+                      <th className="py-2.5 px-3">Product Name & Model</th>
+                      <th className="py-2.5 px-3">SKU</th>
+                      <th className="py-2.5 px-3 text-right">Unit Price</th>
+                      <th className="py-2.5 px-3 text-right">Qty</th>
+                      <th className="py-2.5 px-3 text-right">Total (₹)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 text-slate-700">
+                    {activeInvoiceOrder.items.map((it, idx) => (
+                      <tr key={idx}>
+                        <td className="py-3 px-3">{idx + 1}</td>
+                        <td className="py-3 px-3">
+                          <div className="font-bold text-slate-900">{it.name}</div>
+                          <div className="text-[11px] text-slate-500">Category: {it.category}</div>
+                        </td>
+                        <td className="py-3 px-3 text-slate-500">{it.sku}</td>
+                        <td className="py-3 px-3 text-right">₹{Number(it.unitPrice).toLocaleString('en-IN')}</td>
+                        <td className="py-3 px-3 text-right">{it.quantity}</td>
+                        <td className="py-3 px-3 text-right font-bold text-slate-900">
+                          ₹{Number(it.unitPrice * it.quantity).toLocaleString('en-IN')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Invoice Calculations Footer */}
+              <div className="mt-6 flex justify-end">
+                <div className="w-72 space-y-2 text-xs">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Subtotal:</span>
+                    <span>₹{Number(activeInvoiceOrder.subtotal).toLocaleString('en-IN')}</span>
+                  </div>
+                  {activeInvoiceOrder.discount > 0 && (
+                    <div className="flex justify-between text-emerald-600 font-semibold">
+                      <span>Discount ({activeInvoiceOrder.couponApplied || 'COUPON'}):</span>
+                      <span>- ₹{Number(activeInvoiceOrder.discount).toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-slate-600">
+                    <span>GST (12%):</span>
+                    <span>₹{Number(activeInvoiceOrder.tax).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Shipping Charges:</span>
+                    <span>{activeInvoiceOrder.shipping === 0 ? "FREE" : `₹${activeInvoiceOrder.shipping}`}</span>
+                  </div>
+                  <div className="pt-2 border-t-2 border-rose-600 flex justify-between font-black text-sm text-slate-900">
+                    <span>Grand Total:</span>
+                    <span className="text-rose-600">₹{Number(activeInvoiceOrder.total).toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Thank you note */}
+              <div className="mt-8 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
+                <p className="font-bold text-slate-700">Thank you for your order with BHARAT CYCLE STORE!</p>
+                <p>For showroom warranty assistance or free initial tune-up, present this invoice at any authorized service center.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 7: MY ORDERS & ORDER TRACKING */}
+        {currentView === "my-orders" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <h1 className="text-3xl font-black text-white mb-2">My Orders & Purchase History</h1>
+            <p className="text-sm text-slate-400 mb-8">Track active cycle shipments, download tax invoices, or request status updates</p>
+
+            {orders.length === 0 ? (
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-16 text-center space-y-4">
+                <Bike className="w-16 h-16 text-slate-600 mx-auto" />
+                <h3 className="text-xl font-bold text-white">No showroom orders placed yet</h3>
+                <p className="text-xs text-slate-400">Your confirmed bicycle purchases will automatically appear here with full invoice access.</p>
+                <button 
+                  onClick={() => setCurrentView("shop")}
+                  className="px-6 py-3 rounded-xl bg-rose-600 text-white font-bold text-xs"
+                >
+                  Start Shopping
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {orders.map(order => (
+                  <div key={order.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+                    <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                      <div>
+                        <span className="text-xs text-slate-400">Order ID: </span>
+                        <span className="font-black text-white">{order.id}</span>
+                        <span className="mx-2 text-slate-600">•</span>
+                        <span className="text-xs text-slate-400">{order.date}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                          order.orderStatus === 'Cancelled' 
+                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            : order.orderStatus === 'Delivered'
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        }`}>
+                          {order.orderStatus}
+                        </span>
+                        <button 
+                          onClick={() => {
+                            setActiveInvoiceOrder(order);
+                            setCurrentView("invoice");
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center gap-1"
+                        >
+                          <Eye size={13} /> View Invoice
+                        </button>
+                        <button 
+                          onClick={() => handleDownloadInvoicePDF(order)}
+                          className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white flex items-center gap-1"
+                        >
+                          <Download size={13} /> PDF
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Order Items List */}
+                    <div className="divide-y divide-slate-800/80">
+                      {order.items.map((item, idx) => (
+                        <div key={idx} className="py-3 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <img 
+                              src={item.image || "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=400&q=80"} 
+                              alt={item.name} 
+                              className="w-12 h-12 rounded-lg object-cover bg-slate-950"
+                            />
+                            <div>
+                              <div className="font-bold text-xs text-white">{item.name}</div>
+                              <div className="text-[11px] text-slate-400">Qty: {item.quantity} • SKU: {item.sku}</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs font-bold text-rose-400">₹{(item.unitPrice * item.quantity).toLocaleString('en-IN')}</div>
+                            <div className="text-[10px] text-slate-500">{order.paymentStatus}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Order Total and Cancellation Handler */}
+                    <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between text-xs">
+                      <div>
+                        <span className="text-slate-400">Deliver To: </span>
+                        <span className="text-slate-200 font-semibold">{order.customer.fullName}, {order.customer.city}</span>
+                      </div>
+                      <div className="flex items-center gap-4 mt-2 sm:mt-0">
+                        <span className="text-sm font-black text-white">Total: ₹{Number(order.total).toFixed(2)}</span>
+                        {order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Delivered' && (
+                          <button 
+                            onClick={() => handleCancelOrder(order.id)}
+                            className="text-red-400 hover:text-red-300 font-semibold underline"
+                          >
+                            Cancel Order
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* VIEW 8: SHOWROOM CONTACT & LOCATION */}
+        {currentView === "contact" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <h1 className="text-3xl font-black text-white">Visit Our Flagship Cycle Showroom</h1>
+              <p className="text-sm text-slate-400 mt-2">
+                Have questions regarding custom frames, test rides, corporate cycling schemes, or bulk accessories? We are always here.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Showroom Coordinates */}
+              <div className="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6">
+                <div className="flex items-center gap-3 text-rose-500">
+                  <Bike size={28} />
+                  <span className="text-xl font-black text-white">BHARAT CYCLE STORE</span>
+                </div>
+
+                <div className="space-y-4 text-xs text-slate-300">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="text-rose-500 flex-shrink-0 mt-0.5" size={16} />
+                    <span>{STORE_ADDRESS}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Phone className="text-rose-500 flex-shrink-0" size={16} />
+                    <span>{STORE_PHONE} (Daily 9:30 AM - 9:00 PM)</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="text-rose-500 flex-shrink-0" size={16} />
+                    <span>{STORE_EMAIL}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Clock className="text-rose-500 flex-shrink-0" size={16} />
+                    <span>Open all 7 days with workshop technician support</span>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-xs">
+                  <h4 className="font-bold text-white mb-1">Free 3-Day Test Ride Booking</h4>
+                  <p className="text-slate-400">Bring a valid government ID to test ride any premium MTB or Road Carbon cycle on our indoor test track.</p>
+                </div>
+              </div>
+
+              {/* Contact Message Form */}
+              <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl p-8">
+                <h3 className="text-base font-bold text-white uppercase tracking-wider mb-6">Send Showroom Inquiry</h3>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  alert("Thank you! Your message has been received. Our cycling specialist will contact you within 2 business hours.");
+                }} className="space-y-4 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-slate-400 block mb-1 font-semibold">Your Name *</label>
+                      <input type="text" required placeholder="Ramesh Chandra" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" />
+                    </div>
+                    <div>
+                      <label className="text-slate-400 block mb-1 font-semibold">Contact Mobile *</label>
+                      <input type="tel" required placeholder="+91 98765 00000" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-slate-400 block mb-1 font-semibold">Email Address *</label>
+                    <input type="email" required placeholder="ramesh@example.com" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" />
+                  </div>
+                  <div>
+                    <label className="text-slate-400 block mb-1 font-semibold">Inquiry Subject</label>
+                    <input type="text" placeholder="Frame sizing / Bulk purchase / Service" className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" />
+                  </div>
+                  <div>
+                    <label className="text-slate-400 block mb-1 font-semibold">Your Message *</label>
+                    <textarea rows={4} required placeholder="Write your requirements here..." className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" />
+                  </div>
+                  <button type="submit" className="px-6 py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow-lg shadow-rose-600/30 transition">
+                    Send Message to Store
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 9: SECURE ADMIN DASHBOARD */}
+        {currentView === "admin" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            {!isAdminLoggedIn ? (
+              /* Admin PIN Auth Guard (Passcode: 2026) */
+              <div className="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-6 shadow-2xl">
+                <div className="w-14 h-14 rounded-2xl bg-rose-600/10 text-rose-500 border border-rose-500/20 flex items-center justify-center mx-auto">
+                  <Lock size={26} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-white">Showroom Owner Portal</h2>
+                  <p className="text-xs text-slate-400 mt-1">Enter authorized staff passcode (Default demo pin: <strong>2026</strong>)</p>
+                </div>
+
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if (adminPin === "2026") {
+                    setIsAdminLoggedIn(true);
+                    setAdminPinError("");
+                  } else {
+                    setAdminPinError("Invalid PIN! Please check credentials or use default PIN 2026.");
+                  }
+                }} className="space-y-4">
+                  <input 
+                    type="password"
+                    maxLength={6}
+                    placeholder="Enter Security PIN"
+                    value={adminPin}
+                    onChange={(e) => setAdminPin(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl py-3 px-4 text-center tracking-widest text-lg font-black text-white focus:outline-none focus:border-rose-500"
+                  />
+                  {adminPinError && (
+                    <p className="text-xs text-red-400 font-semibold">{adminPinError}</p>
+                  )}
+                  <button 
+                    type="submit"
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-sm shadow-lg shadow-rose-600/30"
+                  >
+                    Unlock Admin Control Panel
+                  </button>
+                </form>
+              </div>
+            ) : (
+              /* Full Working Admin Console */
+              <div className="space-y-6">
+                
+                {/* Admin Header with Tab Switcher */}
+                <div className="flex flex-wrap items-center justify-between gap-4 p-5 bg-slate-900 border border-slate-800 rounded-2xl">
+                  <div>
+                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">● Authorized Session</span>
+                    <h2 className="text-xl font-black text-white">Bharat Cycle Store Management Console</h2>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button 
+                      onClick={() => setAdminTab("overview")} 
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${adminTab === 'overview' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'}`}
+                    >
+                      Overview
+                    </button>
+                    <button 
+                      onClick={() => setAdminTab("orders")} 
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${adminTab === 'orders' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'}`}
+                    >
+                      Orders ({orders.length})
+                    </button>
+                    <button 
+                      onClick={() => setAdminTab("inventory")} 
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${adminTab === 'inventory' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'}`}
+                    >
+                      Inventory ({products.length})
+                    </button>
+                    <button 
+                      onClick={() => setAdminTab("add-product")} 
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${adminTab === 'add-product' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'}`}
+                    >
+                      + Add Cycle
+                    </button>
+                    <button 
+                      onClick={() => setAdminTab("reviews")} 
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${adminTab === 'reviews' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-300'}`}
+                    >
+                      Reviews ({reviews.length})
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setIsAdminLoggedIn(false);
+                        setAdminPin("");
+                      }} 
+                      className="px-3 py-1.5 rounded-lg bg-red-950/60 border border-red-500/30 text-red-400 text-xs font-bold hover:bg-red-900 transition"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+
+                {/* TAB 1: Financial & Sales Overview */}
+                {adminTab === "overview" && (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl">
+                        <span className="text-xs text-slate-400 font-semibold">Total Revenue</span>
+                        <div className="text-2xl font-black text-rose-500 mt-1">
+                          ₹{orders.filter(o => o.orderStatus !== 'Cancelled').reduce((a, b) => a + b.total, 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                        </div>
+                        <span className="text-[10px] text-emerald-400">↑ Active Showroom Sales</span>
+                      </div>
+                      <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl">
+                        <span className="text-xs text-slate-400 font-semibold">Confirmed Orders</span>
+                        <div className="text-2xl font-black text-white mt-1">{orders.length}</div>
+                        <span className="text-[10px] text-slate-400">All channels</span>
+                      </div>
+                      <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl">
+                        <span className="text-xs text-slate-400 font-semibold">Cycles in Stock</span>
+                        <div className="text-2xl font-black text-amber-400 mt-1">
+                          {products.reduce((acc, p) => acc + p.stock, 0)} Units
+                        </div>
+                        <span className="text-[10px] text-slate-400">Across {products.length} models</span>
+                      </div>
+                      <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl">
+                        <span className="text-xs text-slate-400 font-semibold">Gross Profit Est. (24%)</span>
+                        <div className="text-2xl font-black text-emerald-400 mt-1">
+                          ₹{(orders.filter(o => o.orderStatus !== 'Cancelled').reduce((a, b) => a + b.total, 0) * 0.24).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                        </div>
+                        <span className="text-[10px] text-slate-400">Net showroom margins</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: Live Orders Management & Status Control */}
+                {adminTab === "orders" && (
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 overflow-x-auto">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Confirmed Customer Orders</h3>
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-800 text-slate-400">
+                          <th className="py-3 px-2">Order ID & Date</th>
+                          <th className="py-3 px-2">Customer Info</th>
+                          <th className="py-3 px-2">Items</th>
+                          <th className="py-3 px-2">Total Amount</th>
+                          <th className="py-3 px-2">Payment</th>
+                          <th className="py-3 px-2">Status</th>
+                          <th className="py-3 px-2">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        {orders.map(ord => (
+                          <tr key={ord.id}>
+                            <td className="py-3 px-2">
+                              <div className="font-bold text-white">{ord.id}</div>
+                              <div className="text-[10px] text-slate-400">{ord.date}</div>
+                            </td>
+                            <td className="py-3 px-2">
+                              <div className="font-bold text-white">{ord.customer.fullName}</div>
+                              <div className="text-[10px] text-slate-400">{ord.customer.mobile}</div>
+                            </td>
+                            <td className="py-3 px-2">
+                              {ord.items.map((i, idx) => (
+                                <div key={idx} className="text-[11px] truncate max-w-xs">{i.quantity}x {i.name}</div>
+                              ))}
+                            </td>
+                            <td className="py-3 px-2 font-bold text-rose-400">₹{Number(ord.total).toFixed(2)}</td>
+                            <td className="py-3 px-2">
+                              <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded font-semibold text-slate-200">{ord.paymentStatus}</span>
+                            </td>
+                            <td className="py-3 px-2">
+                              <select 
+                                value={ord.orderStatus}
+                                onChange={(e) => {
+                                  const newStat = e.target.value;
+                                  setOrders(prev => prev.map(o => o.id === ord.id ? { ...o, orderStatus: newStat } : o));
+                                }}
+                                className="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1 text-white"
+                              >
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                              </select>
+                            </td>
+                            <td className="py-3 px-2">
+                              <div className="flex gap-2">
+                                <button 
+                                  onClick={() => {
+                                    setActiveInvoiceOrder(ord);
+                                    setCurrentView("invoice");
+                                  }}
+                                  className="p-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" 
+                                  title="View Invoice"
+                                >
+                                  <Eye size={13} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDownloadInvoicePDF(ord)}
+                                  className="p-1.5 bg-rose-600 hover:bg-rose-500 rounded text-white" 
+                                  title="Download PDF"
+                                >
+                                  <Download size={13} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* TAB 3: Inventory Stock Editor */}
+                {adminTab === "inventory" && (
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 overflow-x-auto">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Stock & Price Catalog Editor</h3>
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-800 text-slate-400">
+                          <th className="py-3 px-2">Product Name</th>
+                          <th className="py-3 px-2">Category</th>
+                          <th className="py-3 px-2">Selling Price (₹)</th>
+                          <th className="py-3 px-2">Units in Stock</th>
+                          <th className="py-3 px-2">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        {products.map(p => (
+                          <tr key={p.id}>
+                            <td className="py-3 px-2 font-bold text-white">{p.name}</td>
+                            <td className="py-3 px-2">{p.category}</td>
+                            <td className="py-3 px-2">
+                              <input 
+                                type="number" 
+                                value={p.price}
+                                onChange={(e) => {
+                                  const newPrice = Number(e.target.value);
+                                  setProducts(prev => prev.map(item => item.id === p.id ? { ...item, price: newPrice } : item));
+                                }}
+                                className="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white text-xs"
+                              />
+                            </td>
+                            <td className="py-3 px-2">
+                              <input 
+                                type="number" 
+                                value={p.stock}
+                                onChange={(e) => {
+                                  const newStock = Number(e.target.value);
+                                  setProducts(prev => prev.map(item => item.id === p.id ? { ...item, stock: newStock } : item));
+                                }}
+                                className="w-16 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white text-xs"
+                              />
+                            </td>
+                            <td className="py-3 px-2">
+                              <button 
+                                onClick={() => setProducts(prev => prev.filter(item => item.id !== p.id))}
+                                className="p-1.5 text-red-400 hover:text-red-300"
+                                title="Delete Product"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* TAB 4: Add New Product Form with Device Image Upload */}
+                {adminTab === "add-product" && (
+                  <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto space-y-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-white">Add New Bicycle or Cycling Accessory</h3>
+                      <p className="text-xs text-slate-400 mt-1">Upload photos directly from your device and configure showroom specs.</p>
+                    </div>
+
+                    <form onSubmit={handleAddProductSubmit} className="space-y-4 text-xs">
+                      <div>
+                        <label className="text-slate-400 block mb-1 font-semibold">Product Name *</label>
+                        <input 
+                          type="text" 
+                          required
+                          value={newProductForm.name}
+                          onChange={(e) => setNewProductForm({ ...newProductForm, name: e.target.value })}
+                          placeholder="e.g. Spartan Trail Pro 29T"
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-slate-400 block mb-1 font-semibold">Category *</label>
+                          <select 
+                            value={newProductForm.category}
+                            onChange={(e) => setNewProductForm({ ...newProductForm, category: e.target.value })}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                          >
+                            {CATEGORIES_LIST.filter(c => c !== "All Categories").map((c, i) => (
+                              <option key={i} value={c}>{c}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-slate-400 block mb-1 font-semibold">Brand / Manufacturer</label>
+                          <input 
+                            type="text" 
+                            value={newProductForm.brand}
+                            onChange={(e) => setNewProductForm({ ...newProductForm, brand: e.target.value })}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="text-slate-400 block mb-1 font-semibold">Selling Price (₹) *</label>
+                          <input 
+                            type="number" 
+                            required
+                            value={newProductForm.price}
+                            onChange={(e) => setNewProductForm({ ...newProductForm, price: e.target.value })}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-slate-400 block mb-1 font-semibold">MRP Price (₹)</label>
+                          <input 
+                            type="number" 
+                            value={newProductForm.originalPrice}
+                            onChange={(e) => setNewProductForm({ ...newProductForm, originalPrice: e.target.value })}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-slate-400 block mb-1 font-semibold">Initial Stock *</label>
+                          <input 
+                            type="number" 
+                            value={newProductForm.stock}
+                            onChange={(e) => setNewProductForm({ ...newProductForm, stock: e.target.value })}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Device Image File Input */}
+                      <div className="p-4 bg-slate-950 rounded-2xl border border-dashed border-slate-700 text-center space-y-2">
+                        <Upload size={24} className="text-rose-500 mx-auto" />
+                        <div className="text-xs font-bold text-white">Upload Cycle Image Directly From Device</div>
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          onChange={handleProductImageUpload}
+                          className="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-600 file:text-white hover:file:bg-rose-500 cursor-pointer"
+                        />
+                        {newProductForm.image && (
+                          <div className="mt-2 text-emerald-400 font-bold text-xs flex items-center justify-center gap-1">
+                            <CheckCircle size={14} /> Image Preview Loaded Successfully
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="text-slate-400 block mb-1 font-semibold">Description</label>
+                        <textarea 
+                          rows={3}
+                          value={newProductForm.description}
+                          onChange={(e) => setNewProductForm({ ...newProductForm, description: e.target.value })}
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white"
+                        />
+                      </div>
+
+                      <button 
+                        type="submit"
+                        className="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold rounded-xl shadow-lg transition"
+                      >
+                        Publish Product to Live Showroom
+                      </button>
+                    </form>
+                  </div>
+                )}
+
+                {/* TAB 5: Customer Reviews Moderation */}
+                {adminTab === "reviews" && (
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Customer Review Approval Desk</h3>
+                    <div className="divide-y divide-slate-800">
+                      {reviews.map(rev => (
+                        <div key={rev.id} className="py-4 flex flex-col sm:flex-row justify-between items-start gap-4">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-white text-xs">{rev.userName}</span>
+                              <span className="text-amber-400 text-xs">{"★".repeat(rev.rating)}</span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${
+                                rev.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
+                              }`}>
+                                {rev.status}
+                              </span>
+                            </div>
+                            <h5 className="font-semibold text-xs text-rose-400">{rev.title}</h5>
+                            <p className="text-xs text-slate-300 max-w-xl">{rev.comment}</p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {rev.status === "pending" ? (
+                              <button 
+                                onClick={() => setReviews(prev => prev.map(r => r.id === rev.id ? { ...r, status: "approved" } : r))}
+                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg"
+                              >
+                                Approve
+                              </button>
+                            ) : (
+                              <button 
+                                onClick={() => setReviews(prev => prev.map(r => r.id === rev.id ? { ...r, status: "pending" } : r))}
+                                className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-lg"
+                              >
+                                Unpublish
+                              </button>
+                            )}
+                            <button 
+                              onClick={() => setReviews(prev => prev.filter(r => r.id !== rev.id))}
+                              className="p-1.5 text-red-400 hover:text-red-300"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      {}
+      <div className="fixed bottom-6 right-6 z-50">
+        {!isChatOpen ? (
+          <button 
+            onClick={() => setIsChatOpen(true)}
+            className="p-4 rounded-full bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-2xl shadow-rose-600/40 hover:scale-110 transition duration-300 flex items-center justify-center border-2 border-white/20 group"
+            title="Chat with Cycling Specialist"
+          >
+            <MessageSquare size={24} className="group-hover:rotate-6 transition duration-200" />
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-slate-900" />
+          </button>
+        ) : (
+          <div className="w-80 sm:w-96 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden flex flex-col h-[480px]">
+            {/* Chat Header */}
+            <div className="p-4 bg-gradient-to-r from-red-700 to-rose-600 text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-slate-950 flex items-center justify-center text-rose-500">
+                  <Bike size={18} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs">Bharat Cycle Support</h4>
+                  <p className="text-[10px] text-rose-200 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live Showroom Desk
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setIsChatOpen(false)} className="text-white/80 hover:text-white">
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Chat Body */}
+            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-950">
+              {chatMessages.map((msg, i) => (
+                <div key={i} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
+                  <div className={`max-w-[85%] rounded-2xl p-3 text-xs ${
+                    msg.sender === 'user' 
+                      ? 'bg-rose-600 text-white rounded-br-none' 
+                      : 'bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700'
+                  }`}>
+                    {msg.text}
+                  </div>
+                  <span className="text-[9px] text-slate-500 mt-1 px-1">{msg.time}</span>
+                </div>
+              ))}
+              {isStoreTyping && (
+                <div className="text-[11px] text-slate-400 italic flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-bounce" /> Store specialist typing...
+                </div>
+              )}
+            </div>
+
+            {/* Chat Input */}
+            <form onSubmit={handleSendChatMessage} className="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+              <input 
+                type="text" 
+                placeholder="Ask about size, delivery, gears..."
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500"
+              />
+              <button 
+                type="submit"
+                className="p-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition flex-shrink-0"
+              >
+                <Send size={15} />
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
+
+      {}
+      <footer className="bg-slate-950 border-t border-slate-900 pt-16 pb-8 text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+            
+            {/* Showroom Col 1 */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 p-0.5 flex items-center justify-center">
+                  <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                    <Bike className="w-6 h-6 text-rose-500" />
+                  </div>
+                </div>
+                <span className="text-xl font-black text-white">BHARAT CYCLE STORE</span>
+              </div>
+              <p className="text-slate-400 leading-relaxed max-w-sm">
+                India's trusted destination for championship mountain bikes, sleek road endurance machines, safe kids' cycles, and original Shimano & SRAM parts.
+              </p>
+              <div className="text-slate-300 space-y-1">
+                <p>📍 {STORE_ADDRESS}</p>
+                <p>📞 Phone: {STORE_PHONE}</p>
+                <p>✉️ Email: {STORE_EMAIL}</p>
+              </div>
+            </div>
+
+            {/* Quick Links Col 2 */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-white uppercase tracking-wider text-xs">Categories</h4>
+              <ul className="space-y-2">
+                <li><button onClick={() => { setSelectedCategory("Mountain Bikes (MTB)"); setCurrentView("shop"); }} className="hover:text-rose-400">Mountain Bikes (MTB)</button></li>
+                <li><button onClick={() => { setSelectedCategory("Road Bikes"); setCurrentView("shop"); }} className="hover:text-rose-400">Road Speed Racers</button></li>
+                <li><button onClick={() => { setSelectedCategory("Electric Bicycles (E-Bikes)"); setCurrentView("shop"); }} className="hover:text-rose-400">Electric E-Bikes</button></li>
+                <li><button onClick={() => { setSelectedCategory("Kids' Bicycles"); setCurrentView("shop"); }} className="hover:text-rose-400">Junior & Kids Range</button></li>
+                <li><button onClick={() => { setSelectedCategory("Bicycle Helmets"); setCurrentView("shop"); }} className="hover:text-rose-400">Certified Helmets</button></li>
+              </ul>
+            </div>
+
+            {/* Showroom Policies Col 3 */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-white uppercase tracking-wider text-xs">Customer Care</h4>
+              <ul className="space-y-2">
+                <li><button onClick={() => setCurrentView("my-orders")} className="hover:text-rose-400">Track Showroom Order</button></li>
+                <li><button onClick={() => setCurrentView("contact")} className="hover:text-rose-400">Book Test Ride</button></li>
+                <li><a href="#warranty" onClick={(e) => { e.preventDefault(); alert("Warranty Policy: Lifetime frame warranty against manufacturing defects on all alloy and carbon models."); }} className="hover:text-rose-400">Warranty Registration</a></li>
+                <li><a href="#shipping" onClick={(e) => { e.preventDefault(); alert("Shipping Policy: Delivered pre-assembled in wooden heavy-duty freight packaging within 3 to 5 business days."); }} className="hover:text-rose-400">Doorstep Delivery Terms</a></li>
+                <li><a href="#privacy" onClick={(e) => { e.preventDefault(); alert("Privacy Policy: All customer billing records and payment sessions are encrypted and secure."); }} className="hover:text-rose-400">Privacy & Terms</a></li>
+              </ul>
+            </div>
+
+            {/* Newsletter Col 4 */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-white uppercase tracking-wider text-xs">Rider Newsletter</h4>
+              <p className="text-slate-400">Get weekend cyclothon alerts, trail guides, and exclusive discount codes.</p>
+              <form onSubmit={(e) => { e.preventDefault(); alert("Thank you for subscribing to BHARAT CYCLE STORE club updates!"); }} className="space-y-2">
+                <input 
+                  type="email" 
+                  required 
+                  placeholder="Enter email address" 
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                />
+                <button type="submit" className="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition">
+                  Subscribe
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <p>© 2026 BHARAT CYCLE STORE. All Rights Reserved. Built with pride in India.</p>
+            <div className="flex items-center gap-4 text-slate-500">
+              <span>GST Registered</span>
+              <span>•</span>
+              <span>100% Genuine Certified</span>
+              <span>•</span>
+              <span>Secure Razorpay / UPI Gateway</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function ProductCard({ product, onAddToCart, onViewDetails }) {
+  return (
+    <div className="group rounded-3xl bg-slate-900 border border-slate-800 hover:border-rose-500/50 p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-rose-950/20">
+      <div>
+        {/* Thumbnail with Badge & Quick View */}
+        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-950 mb-4">
+          <img 
+            src={product.image} 
+            alt={product.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+          />
+          <div className="absolute top-3 left-3 bg-rose-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-md">
+            {product.badge || product.category}
+          </div>
+          <button 
+            onClick={() => onViewDetails(product.id)}
+            className="absolute bottom-3 right-3 bg-black/75 hover:bg-black text-white p-2 rounded-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition duration-200"
+            title="View Specifications"
+          >
+            <Eye size={15} />
+          </button>
+        </div>
+
+        {/* Rating and Stock */}
+        <div className="flex items-center justify-between text-xs mb-1.5">
+          <span className="text-[11px] font-bold text-slate-400">{product.brand}</span>
+          <div className="flex items-center text-amber-400 font-bold text-[11px]">
+            <Star size={13} fill="currentColor" className="mr-0.5" />
+            {product.rating} ({product.reviewsCount})
+          </div>
+        </div>
+
+        {/* Title & SKU */}
+        <h4 
+          onClick={() => onViewDetails(product.id)}
+          className="font-bold text-sm text-white group-hover:text-rose-400 transition cursor-pointer line-clamp-1"
+        >
+          {product.name}
+        </h4>
+        <p className="text-[11px] text-slate-400 line-clamp-2 mt-1">
+          {product.description}
+        </p>
+      </div>
+
+      {/* Pricing and Cart Actions */}
+      <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+        <div>
+          <span className="text-base font-black text-white">₹{product.price.toLocaleString('en-IN')}</span>
+          {product.originalPrice > product.price && (
+            <span className="text-[11px] text-slate-500 line-through ml-1.5">
+              ₹{product.originalPrice.toLocaleString('en-IN')}
+            </span>
+          )}
+        </div>
+
+        <div className="flex gap-1.5">
+          <button 
+            onClick={() => onViewDetails(product.id)}
+            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+            title="Inspect Details"
+          >
+            Specs
+          </button>
+          <button 
+            onClick={() => onAddToCart(product, 1)}
+            className="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-600/30 transition flex items-center gap-1"
+          >
+            <ShoppingBag size={13} /> Add
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
